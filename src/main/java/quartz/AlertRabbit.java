@@ -26,18 +26,19 @@ public class AlertRabbit {
      * @return interval seconds.
      */
 
-    private static int readPropertiesGetInterval() {
-        int interval = 0;
+    private static Properties readProperties() {
         Properties config = new Properties();
         try (InputStream in = AlertRabbit.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
             config.load(in);
-            interval = Integer.parseInt(config.getProperty("rabbit.interval"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return interval;
+        return config;
     }
 
+    private static int getInterval() {
+       return Integer.parseInt(readProperties().getProperty("rabbit.interval"));
+    }
 
     /**
      * Connecting to the database.
@@ -46,20 +47,16 @@ public class AlertRabbit {
      */
 
     public static Connection initConnection() {
-        Connection cn;
-        try (InputStream in = AlertRabbit.class.
-                getClassLoader().getResourceAsStream("rabbit.properties")) {
-            Properties config = new Properties();
-            config.load(in);
-            Class.forName(config.getProperty("driver-class-name"));
+        Connection cn = null;
+        try {
+            Class.forName(readProperties().getProperty("driver-class-name"));
             cn = DriverManager.getConnection(
-                    config.getProperty("url"),
-                    config.getProperty("username"),
-                    config.getProperty("password")
-
+                    readProperties().getProperty("url"),
+                    readProperties().getProperty("username"),
+                    readProperties().getProperty("password")
             );
         } catch (Exception e) {
-            throw new IllegalStateException(e);
+            e.printStackTrace();
         }
         return cn;
     }
@@ -78,8 +75,8 @@ public class AlertRabbit {
     }
 
     public static void main(String[] args) {
-        Connection cn = initConnection();
         try {
+            Connection cn = initConnection();
             List<Long> store = new ArrayList<>();
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
@@ -90,7 +87,7 @@ public class AlertRabbit {
                     .usingJobData(data)
                     .build();
             SimpleScheduleBuilder times = simpleSchedule()
-                    .withIntervalInSeconds(readPropertiesGetInterval())
+                    .withIntervalInSeconds(getInterval())
                     .repeatForever();
             Trigger trigger = newTrigger()
                     .startNow()
