@@ -43,18 +43,15 @@ public class AlertRabbit {
      * @return connection
      */
 
-    public static Connection initConnection() {
-        Connection cn = null;
-        try {
-            Class.forName(readProperties().getProperty("driver-class-name"));
-            cn = DriverManager.getConnection(
+    public static Connection initConnection(Properties config) throws ClassNotFoundException, SQLException {
+        Connection cn;
+        Class.forName(config.getProperty("driver-class-name"));
+        cn = DriverManager.getConnection(
                     readProperties().getProperty("url"),
                     readProperties().getProperty("username"),
                     readProperties().getProperty("password")
             );
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
         return cn;
     }
 
@@ -62,8 +59,8 @@ public class AlertRabbit {
      * Create table rabbit with one field "created_date".
      */
 
-    private static void createTable() throws SQLException {
-        Connection cn = initConnection();
+    private static void createTable() throws SQLException, ClassNotFoundException {
+        Connection cn = initConnection(readProperties());
         String createTable = String.format("create table if not exists rabbit(%s);",
                 "created_date timestamp");
         try (PreparedStatement ps = cn.prepareStatement(createTable)) {
@@ -72,8 +69,9 @@ public class AlertRabbit {
     }
 
     public static void main(String[] args) {
+        Properties config = readProperties();
         try {
-            Connection cn = initConnection();
+            Connection cn = initConnection(config);
             List<Long> store = new ArrayList<>();
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
@@ -84,7 +82,7 @@ public class AlertRabbit {
                     .usingJobData(data)
                     .build();
             SimpleScheduleBuilder times = simpleSchedule()
-                    .withIntervalInSeconds(getInterval())
+                    .withIntervalInSeconds(Integer.parseInt(config.getProperty("rabbit.interval")))
                     .repeatForever();
             Trigger trigger = newTrigger()
                     .startNow()
