@@ -4,10 +4,7 @@ import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -112,10 +109,9 @@ public class AlertRabbit {
         public void execute(JobExecutionContext context) {
             System.out.println("Rabbit runs here ...");
             Connection connection = (Connection) context.getJobDetail().getJobDataMap().get("connection");
-            try (var statement = connection.createStatement()) {
-                statement.execute(
-                        "INSERT INTO rabbit (created_date) VALUES (current_timestamp)"
-                );
+            try (var statement = connection.prepareStatement("INSERT INTO rabbit (created_date) VALUES (?)")) {
+                statement.setDate(1, new Date(new java.util.Date().getTime()));
+                statement.execute();
             } catch (SQLException throwable) {
                 throwable.printStackTrace();
             }
