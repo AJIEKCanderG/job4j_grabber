@@ -45,6 +45,11 @@ public class SqlRuParse implements Parse {
         postParse(urlPost);
     }
 
+    /**
+     * Парсит один пост, получая при этом описание поста и дату создания.
+     * @param url ссылка на конкретный пост
+     */
+
     public static void postParse(String url) throws IOException {
         Document doc = Jsoup.connect(url).get();
         Element message = doc.select(".msgBody").get(1);
