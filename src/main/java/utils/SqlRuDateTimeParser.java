@@ -36,7 +36,7 @@ public class SqlRuDateTimeParser implements DateTimeParser {
         LocalDate day = LocalDate.now();
         LocalTime time = LocalTime.parse(dates[1].trim(), TIME_FORMATTER);
         if (date.length == 3) {
-            LocalDate.parse(String.format("%s %s %s", date[0], MONTHS.get(date[1]), date[2]),
+           day = LocalDate.parse(String.format("%s %s %s", date[0], MONTHS.get(date[1]), date[2]),
                     DATE_FORMATTER);
         } else if (dates[0].contains("сегодня")) {
            day =  LocalDate.now();
