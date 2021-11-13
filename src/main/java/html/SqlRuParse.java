@@ -98,8 +98,8 @@ public class SqlRuParse implements Parse {
         String description = postDescription.ownText().trim();
         String dateCreated = postDateCreated.first().ownText().replace(" [] |", "");
         LocalDateTime parseDate = dateTimeParser.parse(dateCreated);
-        post.setTitle(title);
-        post.setDescription(description);
+        post.setName(title);
+        post.setText(description);
         post.setLink(link);
         post.setCreated(parseDate);
         return post;

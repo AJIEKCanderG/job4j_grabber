@@ -7,12 +7,22 @@ import java.util.Objects;
  * @author Ajiekcander
  */
 public class Post {
-
     private int id;
-    private String title;
+    private String name;
+    private String text;
     private String link;
-    private String description;
     private LocalDateTime created;
+
+    public Post() {
+    }
+
+    public Post(int id, String name, String text, String link, LocalDateTime created) {
+        this.id = id;
+        this.name = name;
+        this.link = link;
+        this.text = text;
+        this.created = created;
+    }
 
     public int getId() {
         return id;
@@ -22,12 +32,12 @@ public class Post {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getLink() {
@@ -38,12 +48,12 @@ public class Post {
         this.link = link;
     }
 
-    public String getDescription() {
-        return description;
+    public String getText() {
+        return text;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setText(String text) {
+        this.text = text;
     }
 
     public LocalDateTime getCreated() {
@@ -64,23 +74,23 @@ public class Post {
         }
         Post post = (Post) o;
         return id == post.id
-                && Objects.equals(title, post.title)
+                && Objects.equals(name, post.name)
                 && Objects.equals(link, post.link)
-                && Objects.equals(created, post.created.withNano(0));
+                && Objects.equals(created.withNano(0), post.created.withNano(0));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, link, created);
+        return Objects.hash(id, name, link, created);
     }
 
     @Override
     public String toString() {
         return "Post{"
                 + "id=" + id
-                + ", title='" + title + '\''
+                + ", title='" + name + '\''
                 + ", link='" + link + '\''
-                + ", description='" + description + '\''
+                + ", description='" + text + '\''
                 + ", created=" + created
                 + '}';
     }

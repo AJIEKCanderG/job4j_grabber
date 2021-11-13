@@ -1,6 +1,8 @@
 package grabber;
 
 import model.Post;
+
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -12,5 +14,5 @@ public interface Store {
 
     List<Post> getAll();
 
-    Post findById(int id);
+    Post findById(int id) throws SQLException;
 }
