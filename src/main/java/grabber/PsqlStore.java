@@ -3,13 +3,11 @@ package grabber;
 import date.SqlRuDateTimeParser;
 import html.SqlRuParse;
 import model.Post;
-import quartz.AlertRabbit;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -39,12 +37,18 @@ public class PsqlStore implements Store, AutoCloseable {
     @Override
     public void save(Post post) {
         try (var statement = cn.prepareStatement(
-                "insert into post (name, text, link, created) values (?, ?, ?, ?);")) {
+                "insert into post (name, text, link, created) values (?, ?, ?, ?);", Statement
+                        .RETURN_GENERATED_KEYS)) {
             statement.setString(1, post.getName());
             statement.setString(2, post.getText());
             statement.setString(3, post.getLink());
             statement.setTimestamp(4, Timestamp.valueOf(post.getCreated()));
             statement.execute();
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    post.setId(generatedKeys.getInt(1));
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -53,7 +57,6 @@ public class PsqlStore implements Store, AutoCloseable {
     @Override
     public List<Post> getAll() {
         List<Post> rsl = new ArrayList<>();
-        Post post = new Post();
         try (var statement = cn.prepareStatement(
                 "select * from post;")) {
             try (var resultSet = statement.executeQuery()) {
