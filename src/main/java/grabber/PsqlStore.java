@@ -8,10 +8,7 @@ import quartz.AlertRabbit;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,12 +58,7 @@ public class PsqlStore implements Store, AutoCloseable {
                 "select * from post;")) {
             try (var resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    post.setId(resultSet.getInt("id"));
-                    post.setName(resultSet.getString("name"));
-                    post.setText(resultSet.getString("text"));
-                    post.setLink(resultSet.getString("link"));
-                    post.setCreated(resultSet.getTimestamp("created").toLocalDateTime());
-                    rsl.add(post);
+                    rsl.add(createPost(resultSet));
                 }
             }
         } catch (SQLException e) {
@@ -76,23 +68,18 @@ public class PsqlStore implements Store, AutoCloseable {
     }
 
     @Override
-    public Post findById(int id) throws SQLException {
+    public Post findById(int id) {
+        var sql = "select * from post where id = ?";
         Post post = null;
-        try (var statement = cn.prepareStatement(
-                "select * from post where id = ?")) {
+        try (var statement = cn.prepareStatement(sql)) {
             statement.setInt(1, id);
             try (var rslKey = statement.executeQuery()) {
                 if (rslKey.next()) {
-                    post = new Post();
-                    post.setId(rslKey.getInt("id"));
-                    post.setName(rslKey.getString("name"));
-                    post.setText(rslKey.getString("text"));
-                    post.setLink(rslKey.getString("link"));
-                    post.setCreated(rslKey.getTimestamp("created").toLocalDateTime());
-                    }
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+                    post = createPost(rslKey);
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return post;
     }
@@ -104,6 +91,15 @@ public class PsqlStore implements Store, AutoCloseable {
         }
     }
 
+    private Post createPost(ResultSet resultSet) throws SQLException {
+        return new Post(
+                resultSet.getInt("id"),
+                resultSet.getString("name"),
+                resultSet.getString("text"),
+                resultSet.getString("link"),
+                resultSet.getTimestamp("created").toLocalDateTime()
+        );
+    }
 
     private static Properties getProperties() {
         Properties properties = new Properties();
