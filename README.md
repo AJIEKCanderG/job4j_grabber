@@ -1,4 +1,5 @@
 [![Build Status](https://www.travis-ci.com/AJIEKCanderG/job4j_grabber.svg?branch=master)](https://www.travis-ci.com/AJIEKCanderG/job4j_grabber)
+[![Java CI with Maven](https://github.com/AJIEKCanderG/job4j_grabber/actions/workflows/maven.yml/badge.svg)](https://github.com/AJIEKCanderG/job4j_grabber/actions/workflows/maven.yml)
 [![codecov](https://codecov.io/gh/AJIEKCanderG/job4j_grabber/branch/master/graph/badge.svg)](https://codecov.io/gh/AJIEKCanderG/job4j_grabber)
 
 ## job4j_grabber (Агрегатор вакансий).
