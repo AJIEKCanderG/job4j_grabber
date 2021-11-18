@@ -1,7 +1,6 @@
 package grabber;
 
 import date.SqlRuDateTimeParser;
-import html.SqlRuParse;
 import model.Post;
 
 import java.io.FileInputStream;
@@ -34,6 +33,11 @@ public class PsqlStore implements Store, AutoCloseable {
         }
     }
 
+    /**
+     * Метод сохраняет выбранный пост в базу данных в таблицу post
+     *
+     * @param post принимаемый пост
+     */
     @Override
     public void save(Post post) {
         try (var statement = cn.prepareStatement(
@@ -54,6 +58,11 @@ public class PsqlStore implements Store, AutoCloseable {
         }
     }
 
+    /**
+     * Метод показывает все посты из базы данных из таблицы post
+     *
+     * @return возвращает лист всех постов
+     */
     @Override
     public List<Post> getAll() {
         List<Post> rsl = new ArrayList<>();
@@ -70,6 +79,12 @@ public class PsqlStore implements Store, AutoCloseable {
         return rsl;
     }
 
+    /**
+     * Метод показывает объявление из базы данных с указанным id
+     *
+     * @param id принимаемый на входе id поста
+     * @return возвращает найденный по id пост
+     */
     @Override
     public Post findById(int id) {
         var sql = "select * from post where id = ?";

@@ -1,4 +1,4 @@
-package html;
+package grabber;
 
 import date.DateTimeParser;
 import grabber.Parse;

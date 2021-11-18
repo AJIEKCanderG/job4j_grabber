@@ -1,7 +1,6 @@
 package grabber;
 
 import date.SqlRuDateTimeParser;
-import html.SqlRuParse;
 import model.Post;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
@@ -18,22 +17,45 @@ public class Grabber implements Grab {
 
     private final Properties cfg = new Properties();
 
+    /**
+     * Метод создает объект класса PsqlStore, передает в него cfg для инициализации.
+     *
+     * @return возвращает готовый объект PsqlStore.
+     */
     public Store store() {
         return new PsqlStore(cfg);
     }
 
+    /**
+     * Метод создает scheduler()
+     *
+     * @return возвращаемый scheduler()
+     * @throws SchedulerException исключение при ошибке создания.
+     */
     public Scheduler scheduler() throws SchedulerException {
         Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
         scheduler.start();
         return scheduler;
     }
 
+    /**
+     * Метод считывает файл app.properties
+     *
+     * @throws IOException исключение ввода/ввывода
+     */
     public void cfg() throws IOException {
         try (InputStream in = new FileInputStream("./src/main/resources/app.properties")) {
             cfg.load(in);
         }
     }
 
+    /**
+     * Метод инициализирует переменные и создает работу по расписанию
+     *
+     * @param parse входной объект Parse
+     * @param store входной объект Store
+     * @param scheduler входной шедулер
+     */
     @Override
     public void init(Parse parse, Store store, Scheduler scheduler) throws SchedulerException {
         JobDataMap data = new JobDataMap();
@@ -53,7 +75,11 @@ public class Grabber implements Grab {
     }
 
     public static class GrabJob implements Job {
-
+        /**
+         * Метод выполняет созданную работу
+         *
+         * @param context контекст работы
+         */
         @Override
         public void execute(JobExecutionContext context) {
             JobDataMap map = context.getJobDetail().getJobDataMap();
@@ -69,6 +95,10 @@ public class Grabber implements Grab {
         }
     }
 
+    /**
+     * Ответ от сервера в виде строкового представления списка найденных вакансий
+     * @param store список вакансий из бд
+     */
     public void web(Store store) {
         new Thread(() -> {
             try (ServerSocket server = new ServerSocket(Integer.parseInt(cfg.getProperty("port")))) {

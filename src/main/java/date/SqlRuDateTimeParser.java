@@ -9,6 +9,7 @@ import java.util.Map;
 import static java.util.Map.entry;
 
 /**
+ * SqlRuDateTimeParser преобразует дату в системный формат.
  * @author Ajiekcander
  */
 public class SqlRuDateTimeParser implements DateTimeParser {
@@ -28,6 +29,19 @@ public class SqlRuDateTimeParser implements DateTimeParser {
             entry("ноя", "11"),
             entry("дек", "12")
             );
+
+    /**
+     * Метод преобразует дату и время в системный формат
+     *
+     * @param parse строка, содержащая дату и время
+     * @return возврат даты/времени в системном формате
+     * DATE_FORMATTER шаблон даты
+     * TIME_FORMATTER шаблон времени
+     * Делим нашу вх. строку parse методом слипт по разделителю "," и записываем в массив dates.
+     * Левую часть вх. строки (день, мес и год) делим по пробелу на отдельные части и записываем в массив date.
+     * localDate day определение текущей даты.
+     * localTime time форматирование времени.
+     */
 
     @Override
     public LocalDateTime parserTimeAndDate(String parse) {
