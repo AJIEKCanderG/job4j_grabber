@@ -103,7 +103,7 @@ public class SqlRuParse implements Parse {
         Element postDescription = doc.select(".msgBody").get(1);
         Elements postDateCreated = doc.select(".msgFooter");
         String title = postMessageHeader.first().text().trim();
-        String description = postDescription.ownText().trim();
+        String description = postDescription.text();
         String dateCreated = postDateCreated.first().ownText().replace(" [] |", "");
         LocalDateTime parseDate = dateTimeParser.parserTimeAndDate(dateCreated);
         post.setName(title);
