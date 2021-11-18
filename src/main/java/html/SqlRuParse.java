@@ -26,22 +26,25 @@ public class SqlRuParse implements Parse {
     }
 
     public static void main(String[] args) throws Exception {
-        String urlPost = "https://www.sql.ru/forum/1325330/"
-                + "lidy-be-fe-senior-cistemnye-analitiki-qa-i-devops-moskva-do-200t";
-        for (int i = 1; i <= 5; i++) {
+      for (int i = 1; i <= 5; i++) {
             String url = "https://www.sql.ru/forum/job-offers/";
             Document doc = Jsoup.connect(url + i).get();
             Elements row = doc.select(".postslisttopic");
             for (Element td : row) {
                 Element href = td.child(0);
-                System.out.println(href.attr("href"));
-                System.out.println(href.text());
-                Element date = td.parent().child(5);
-                System.out.println(date.text());
+                String title = href.text().toLowerCase();
+                if (title.contains("java") && !title.contains("javascript")) {
+                    System.out.println(href.attr("href"));
+                    System.out.println(href.text());
+                    Element date = td.parent().child(5);
+                    System.out.println(date.text());
+                }
             }
             System.out.println("\n" + "---------------------------- End page "
                     + i + " ----------------------------------" + "\n");
         }
+        String urlPost = "https://www.sql.ru/forum/1325330/"
+                + "lidy-be-fe-senior-cistemnye-analitiki-qa-i-devops-moskva-do-200t";
         postParse(urlPost);
     }
 
@@ -71,12 +74,17 @@ public class SqlRuParse implements Parse {
     @Override
     public List<Post> list(String link) throws IOException {
         List<Post> postList = new ArrayList<>();
-        Document doc = Jsoup.connect(link).get();
-        Elements row = doc.select(".postslisttopic");
-        for (Element td : row) {
-            Element href = td.child(0);
-            String  attr = href.attr("href");
-            postList.add(detail(attr));
+        for (int i = 1; i <= 5; i++) {
+            Document doc = Jsoup.connect(link + i).get();
+            Elements row = doc.select(".postslisttopic");
+            for (Element td : row) {
+                Element href = td.child(0);
+                String attr = href.attr("href");
+                String title = href.text().toLowerCase();
+                if (title.contains("java") && !title.contains("javascript")) {
+                    postList.add(detail(attr));
+                }
+            }
         }
         return postList;
     }
@@ -97,7 +105,7 @@ public class SqlRuParse implements Parse {
         String title = postMessageHeader.first().text().trim();
         String description = postDescription.ownText().trim();
         String dateCreated = postDateCreated.first().ownText().replace(" [] |", "");
-        LocalDateTime parseDate = dateTimeParser.parse(dateCreated);
+        LocalDateTime parseDate = dateTimeParser.parserTimeAndDate(dateCreated);
         post.setName(title);
         post.setText(description);
         post.setLink(link);

@@ -13,7 +13,7 @@ public class SqlRuDateTimeParserTest {
 
     @Test
     public void whenDayMonthYear() {
-        LocalDateTime fullTimeAndDate = new SqlRuDateTimeParser().parse("24 окт 21, 10:10");
+        LocalDateTime fullTimeAndDate = new SqlRuDateTimeParser().parserTimeAndDate("24 окт 21, 10:10");
         LocalDateTime expected = LocalDateTime.of(
                 LocalDate.of(2021, 10, 24),
                         LocalTime.of(10, 10));
@@ -22,7 +22,7 @@ public class SqlRuDateTimeParserTest {
 
     @Test
     public void whenToday() {
-        LocalDateTime fullTimeAndDate = new SqlRuDateTimeParser().parse("сегодня, 11:11");
+        LocalDateTime fullTimeAndDate = new SqlRuDateTimeParser().parserTimeAndDate("сегодня, 11:11");
         LocalDateTime expected = LocalDateTime
                 .of(LocalDate.now(), LocalTime
                         .of(11, 11));
@@ -30,7 +30,7 @@ public class SqlRuDateTimeParserTest {
     }
     @Test
     public void whenYesterday() {
-        LocalDateTime fullTimeAndDate = new SqlRuDateTimeParser().parse("вчера, 09:01");
+        LocalDateTime fullTimeAndDate = new SqlRuDateTimeParser().parserTimeAndDate("вчера, 09:01");
         LocalDateTime expected = LocalDateTime
                 .of(LocalDate.now().minusDays(1), LocalTime
                         .of(9, 1));
